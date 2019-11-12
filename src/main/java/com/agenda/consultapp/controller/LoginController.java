@@ -28,31 +28,41 @@ public class LoginController {
     }
 
 
-    @RequestMapping(value="/registration", method = RequestMethod.GET)
-    public ModelAndView registration(){
+    @RequestMapping(value="/registrar", method = RequestMethod.GET)
+    public ModelAndView registrar(){
         ModelAndView modelAndView = new ModelAndView();
         User user = new User();
         modelAndView.addObject("user", user);
-        modelAndView.setViewName("registration");
+        modelAndView.setViewName("registrar");
+        return modelAndView;
+    }
+    
+    
+    @RequestMapping(value="/registrarMedico", method = RequestMethod.GET)
+    public ModelAndView registrarMedico(){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = new User();
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("registrarMedico");
         return modelAndView;
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    @RequestMapping(value = "/registrar", method = RequestMethod.POST)
     public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
         User userExists = userService.findUserByEmail(user.getEmail());
         if (userExists != null) {
             bindingResult
                     .rejectValue("email", "error.user",
-                            "There is already a user registered with the email provided");
+                            "Este email ja esta em uso");
         }
         if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("registration");
+            modelAndView.setViewName("registrar");
         } else {
             userService.saveUser(user);
-            modelAndView.addObject("successMessage", "User has been registered successfully");
+            modelAndView.addObject("successMessage", "Usuário registrado com sucesso");
             modelAndView.addObject("user", new User());
-            modelAndView.setViewName("registration");
+            modelAndView.setViewName("registrar");
 
         }
         return modelAndView;
@@ -68,6 +78,45 @@ public class LoginController {
         modelAndView.setViewName("admin/home");
         return modelAndView;
     }
+    
+    @RequestMapping(value={"/agendamentos"}, method = RequestMethod.GET)
+    public ModelAndView agendamentos(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("agendamentos");
+        return modelAndView;
+    }
+    
+    
+    @RequestMapping(value={"/confirmarAtendimento"}, method = RequestMethod.GET)
+    public ModelAndView confirmarAtendimento(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("confirmarAtendimento");
+        return modelAndView;
+    }
+    
+    @RequestMapping(value={"/historicoAgendamento"}, method = RequestMethod.GET)
+    public ModelAndView historicoAgendamento(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("confirmarAtendimento");
+        return modelAndView;
+    }
 
+    
+    @RequestMapping(value="/index", method = RequestMethod.GET)
+    public ModelAndView index(){
+        ModelAndView modelAndView = new ModelAndView();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+        modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
+        modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
+        modelAndView.setViewName("index");
+        return modelAndView;
+    }
+    
+    
+    
+    
+    
+    
 
 }
